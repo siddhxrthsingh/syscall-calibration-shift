@@ -51,7 +51,7 @@ additive smoothing. Everything is synthetic; see [Limitations](#limitations).
 | `scripts/forbidden_in_benign.py` | Post-hoc diagnostic reported in the paper (forbidden transitions in benign traces) |
 | `diagnose.py` | Development helper used only for tuning on development seeds 0–9 |
 | `requirements.txt` | Dependencies (unpinned) |
-| `requirements-tested.txt` | Exact package versions with which byte-identical reproduction was verified |
+| `requirements-tested.txt` | Exact package versions used in the reference Linux reproduction environment |
 | `pytest.ini` | pytest settings (`pythonpath = src`, `testpaths = tests`) |
 
 **Naming note.** The code calls the low-intensity attack family `mimic`: the config key is
@@ -71,7 +71,7 @@ results stay byte-identical.
 **Linux / macOS (bash):**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/siddhxrthsingh/syscall-calibration-shift
 cd syscall-calibration-shift
 python3 -m venv .venv
 source .venv/bin/activate
@@ -82,7 +82,7 @@ export PYTHONPATH=src
 **Windows (PowerShell):**
 
 ```powershell
-git clone <repository-url>
+git clone https://github.com/siddhxrthsingh/syscall-calibration-shift
 cd syscall-calibration-shift
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -131,14 +131,33 @@ Write new runs to a separate directory such as `results_repro/`, as above, so th
 
 **Checking the reproduction:**
 
+The committed CSV files are stored with LF line endings, while the CSV writer may emit CRLF
+line endings on some platforms. A raw byte comparison can therefore fail even when every
+CSV value is identical. On Linux/macOS, compare after normalising carriage returns:
+
 ```bash
-cmp results_repro/rerun_seeds1000-1029.csv            results/rerun_seeds1000-1029.csv
-cmp results_repro/rerun_seeds1000-1029_oracle_roc.csv results/rerun_seeds1000-1029_oracle_roc.csv
+cmp <(tr -d '\r' < results_repro/rerun_seeds1000-1029.csv) \
+    <(tr -d '\r' < results/rerun_seeds1000-1029.csv)
+
+cmp <(tr -d '\r' < results_repro/rerun_seeds1000-1029_oracle_roc.csv) \
+    <(tr -d '\r' < results/rerun_seeds1000-1029_oracle_roc.csv)
 ```
 
-(PowerShell: `(Get-FileHash a).Hash -eq (Get-FileHash b).Hash`.) With the versions in
-`requirements-tested.txt`, both files are byte-identical. Other NumPy/SciPy versions may differ in the
-last printed digit.
+In PowerShell, compare normalised text rather than raw file hashes:
+
+```powershell
+$a = (Get-Content results_repro/rerun_seeds1000-1029.csv -Raw) -replace "`r", ""
+$b = (Get-Content results/rerun_seeds1000-1029.csv -Raw) -replace "`r", ""
+$a -ceq $b
+```
+
+Repeat with the `_oracle_roc.csv` filenames for the oracle-ROC file. The reference Linux
+reproduction was byte-identical before repository line-ending normalisation. In the independent
+Windows rerun, the main CSV matched within a numerical tolerance of 1e-12, the oracle-ROC CSV
+matched exactly, and all seven report outputs passed numerical or semantic comparisons. The
+regenerated figures were visually consistent, but their rendered dimensions and PDF bytes were
+not identical. Byte-for-byte identity is therefore not a cross-platform guarantee.
+
 
 ## Result analysis, tables and figures
 
@@ -181,8 +200,9 @@ python3 scripts/forbidden_in_benign.py --out results_repro/forbidden_in_benign_p
 | `figs/*.pdf`, `figs/*.png` | Figures written by `syscalib.make_report` (the default Type 3 PDF fonts) |
 | `diagnostics/forbidden_in_benign_per_seed.csv` | Per-seed values of the post-hoc diagnostic |
 
-The saved run is a re-execution of the original run with the same code, configuration and seeds. Its result
-files are byte-identical to the original saved files.
+The saved run is a re-execution of the original run with the same code, configuration and seeds. The
+reference Linux reproduction was byte-identical before Git line-ending normalisation. Cross-platform
+comparison details and tolerances are given in the reproduction-check section above.
 
 ## Configuration (`config/default.json`)
 
@@ -208,7 +228,7 @@ random numbers.
 
 ## Hardware and software environment
 
-Byte-identical reproduction of the reported run was verified on 19 Nov 2026 in this environment:
+The reference Linux reproduction was verified on 19 Nov 2026 in this environment:
 
 - Linux x86_64, 2 vCPU (Intel Xeon @ 2.10 GHz), 7 GB RAM
 - Python 3.13.18; NumPy 2.5.3, SciPy 1.18.1, pandas 3.0.5, Matplotlib 3.11.2, pytest 9.1.1
@@ -235,5 +255,11 @@ The code is CPU-only; `--jobs` sets the number of worker processes.
 
 ## Citation
 
-If you use this code, please cite the paper above. A formal citation will be added once the paper is
-published.
+If you use this code, please cite the manuscript identified above. A formal bibliographic citation
+will be added if and when the paper is published.
+
+## Licence
+
+No reuse licence is currently specified. Making this repository public allows people to view its
+contents, but does not by itself grant permission to reuse, modify or redistribute the code.
+Please contact the authors regarding permissions.

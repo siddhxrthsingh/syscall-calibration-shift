@@ -3,8 +3,8 @@
 Status: **preliminary experiment**, not the final confirmatory study.
 
 * Development seeds: 0-9 (generator, shift strength and attack difficulty tuned here; never reported as results).
-* Preliminary run seeds: 1000-1029 (30 independent worlds). Config frozen in `config/default.json`; git-style
-  hash of the config is stored next to the results (`*.meta.json`).
+* Preliminary run seeds: 1000-1029 (30 independent worlds). Config frozen in `config/default.json`; the
+  metadata file (`*.meta.json`) records the seeds, full configuration and elapsed time.
 * Timeline (fixed a priori, not selected from a pilot): 10 pre-shift + 20 post-shift batches of 500 calibration
   traces; the shift takes effect at evaluation/calibration batch 11. Threshold computed from calibration batch k is
   used on evaluation batch k+1 (T[0] = T0 for evaluation batch 1).
@@ -15,3 +15,13 @@ Status: **preliminary experiment**, not the final confirmatory study.
   (same seed, same streams) for strategy contrasts. No null-hypothesis significance tests are reported for this
   preliminary run; intervals are descriptive.
 * Nothing else is computed from the run before these summaries; no seeds are dropped or re-run.
+
+---
+
+## Documentation correction
+
+The original draft of this plan stated that a git-style hash of the configuration was stored in
+the result metadata. That statement was incorrect. The committed metadata file contains the
+`seeds`, `config` and `elapsed_s` fields; it does not contain a configuration hash. The sentence
+above corrects the description of the recorded metadata. The pre-specified analysis choices and
+summary windows are unchanged.
