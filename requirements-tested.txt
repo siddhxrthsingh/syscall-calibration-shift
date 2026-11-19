@@ -1,0 +1,7 @@
+# Exact versions used to verify byte-identical reproduction on 2026-11-19 (Python 3.13.18).
+# requirements.txt (unpinned) is the original dependency list; use this file to match the verified environment.
+numpy==2.5.3
+scipy==1.18.1
+pandas==3.0.5
+matplotlib==3.11.2
+pytest==9.1.1
