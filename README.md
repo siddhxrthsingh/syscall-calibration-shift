@@ -2,8 +2,9 @@
 
 Simulation code, configuration, tests and saved results for the paper
 
-> S. Singh and S. Maslekar, *Calibration Under Workload Shift in System-Call Anomaly Detection: A Simulation
-> Study of False-Alarm Control and Detection Sensitivity*, PES University, Bengaluru, India (manuscript, 2026).
+
+> Siddharth Singh and Siddharth Maslekar, *Calibration Under Workload Shift in System-Call Anomaly Detection: A Simulation Study of False-Alarm Control and Detection Sensitivity*, PES University, Bengaluru, India (manuscript, 2026).
+
 
 ## Overview
 
